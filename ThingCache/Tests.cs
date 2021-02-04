@@ -55,16 +55,21 @@ namespace MockFramework
         }
 
         [Test]
-        public void TestReadMultipleKeys()
+        public void TryReadShouldReadOnceFromServiceWhenTwoKeys()
+        {
+            cache.Get(thingKey1);
+            cache.Get(thingKey2);
+            A.CallTo(() => service.TryRead(thingKey1, out thing1)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => service.TryRead(thingKey2, out thing2)).MustHaveHappenedOnceExactly();
+        }
+
+        public void ActionTryReadShouldReturnDifferentItemsConfiguredInService()
         {
             var firstItem = cache.Get(thingKey1);
             var secondItem = cache.Get(thingKey2);
             Assert.That(firstItem == thing1);
             Assert.That(secondItem == thing2);
             Assert.That(firstItem != secondItem);
-            A.CallTo(() => service.TryRead(thingKey1, out thing1)).MustHaveHappenedOnceExactly();
-            A.CallTo(() => service.TryRead(thingKey2, out thing2)).MustHaveHappenedOnceExactly();
-            A.CallTo(() => service.TryRead(A<string>.Ignored, out thing2)).MustHaveHappened(2, Times.Exactly);
         }
 
     }
